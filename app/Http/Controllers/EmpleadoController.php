@@ -65,21 +65,15 @@ class EmpleadoController extends Controller
 
     public function edit($id)
     {
-        // Obtener el empleado a editar
         $empleado = Empleado::findOrFail($id);
-
-        // Obtener todas las áreas y roles
         $areas = Area::all();
         $roles = Role::all();
 
-        // Pasar el empleado, áreas y roles a la vista
         return view('edit', compact('empleado', 'areas', 'roles'));
     }
 
-    // Método para actualizar la información del empleado
     public function update(Request $request, $id)
     {
-        // Validación de los datos
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -87,14 +81,14 @@ class EmpleadoController extends Controller
             'area' => 'required|exists:areas,id',
             'descripcion' => 'nullable|string',
             'boletin' => 'nullable|boolean',
-            'roles' => 'required|array|min:1', // Validar que roles sea un array y tenga al menos un elemento
-        'roles.*' => 'exists:roles,id', // Validar cada rol individualmente
+            'roles' => 'required|array|min:1', 
+        'roles.*' => 'exists:roles,id', 
         ]);
 
-        // Obtener el empleado a actualizar
+       
         $empleado = Empleado::findOrFail($id);
 
-        // Actualizar la información del empleado
+       
         $empleado->update([
             'nombre' => $validated['nombre'],
             'email' => $validated['email'],
@@ -104,10 +98,8 @@ class EmpleadoController extends Controller
             'boletin' => $validated['boletin'],
         ]);
 
-        // Sincronizar los roles del empleado
         $empleado->roles()->sync($validated['roles']);
 
-        // Redirigir con un mensaje de éxito
         return redirect()->route('empleados.index')->with('success', 'Empleado actualizado con éxito');
     }
 
